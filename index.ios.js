@@ -63,7 +63,7 @@ var styles = StyleSheet.create({
   list: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   item: {
     marginHorizontal: 1,
@@ -148,7 +148,7 @@ var FullImg = React.createClass({
       var photo = this.state.img;
       console.log("PHOTO ID " + photo.id);
       // console.log("INDEX " + data.indexOf(photo) );
-      currentFullPhotoIndex = data.indexOf(photo); 
+      currentFullPhotoIndex = data.indexOf(photo);
         // return (
         return this.displayPhoto(photo);
         // );

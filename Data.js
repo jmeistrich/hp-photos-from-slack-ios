@@ -14,7 +14,8 @@ var ddpClient = new DDPClient({url: 'ws://hp-photos-from-slack.meteor.com/websoc
 var batch = '2015-europe';
 var STORAGE_IDS = 'imageIDs';
 
-var SUPPORT_CACHING = false;
+var SUPPORT_CACHING = true;
+var SUPPORT_CACHING_BASIC = true;
 
 class Data {
     init(cb) {
@@ -38,21 +39,30 @@ class Data {
                             _this._dataById[obj.id] = obj;
                         }
 
-                        if (localData.length > 0)
+                        if (SUPPORT_CACHING_BASIC)
                         {
                             _this._data = localData;
-                            LocalImages.imagePath(localData[0].id, (value) => {
-                                if (!value)
-                                {
-                                    console.log('CLEARING');
-                                    LocalImages.clear();
-                                    AsyncStorage.setItem(STORAGE_IDS, '');
-                                    _this._dataById = {};
-                                    _this._data = [];
-                                }
-                                _this._cb(_this._data);
-                            });
+                            _this._cb(_this._data);
                         }
+                        else
+                        {
+                            if (localData.length > 0)
+                            {
+                                _this._data = localData;
+                                LocalImages.imagePath(localData[0].id, (value) => {
+                                    if (!value)
+                                    {
+                                        console.log('CLEARING');
+                                        LocalImages.clear();
+                                        AsyncStorage.setItem(STORAGE_IDS, '');
+                                        _this._dataById = {};
+                                        _this._data = [];
+                                    }
+                                    _this._cb(_this._data);
+                                });
+                            }
+                        }
+
                     }
                 })
                 .catch((error) => _this._appendMessage('AsyncStorage error: ' + error.message))
@@ -146,7 +156,7 @@ class Data {
 
             this._cb(this._data);
 
-            if (SUPPORT_CACHING)
+            if (SUPPORT_CACHING && !SUPPORT_CACHING_BASIC)
             {
                 this._cache(this._data, this._cb);
             }
