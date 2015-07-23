@@ -9,61 +9,74 @@
 
 @implementation LocalImages
 
+RCT_EXPORT_METHOD(clear)
+{
+    NSString * documentsDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+  
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSError *error = nil;
+    for (NSString *file in [fm contentsOfDirectoryAtPath:documentsDirectoryPath error:&error]) {
+      BOOL success = [fm removeItemAtPath:[NSString stringWithFormat:@"%@/%@", documentsDirectoryPath, file] error:&error];
+      if (!success || error) {
+        // it failed.
+        NSLog(@"Failed to delete %@", error);
+      }
+      else
+      {
+        NSLog(@"Deleted");
+      }
+    }
+}
+
 RCT_EXPORT_METHOD(saveImage:(NSString *)url id:(NSString *)id callback:(RCTResponseSenderBlock)callback)
 {
   NSString * documentsDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
   NSString *imgName = [id stringByAppendingString:@".png"];
   NSString *imgURL = url;
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *writablePath = [documentsDirectoryPath stringByAppendingPathComponent:imgName];
+  NSString *path = [documentsDirectoryPath stringByAppendingPathComponent:imgName];
   
-  if(![fileManager fileExistsAtPath:writablePath]){
+  if(![fileManager fileExistsAtPath:path]){
     // file doesn't exist
     NSLog(@"file doesn't exist");
     if (imgName) {
       //save Image From URL
-      [self getImageFromURLAndSaveItToLocalData:imgName fileURL:imgURL inDirectory:documentsDirectoryPath];
-      callback(@[[NSNull null], [NSNull null]]);
+      [self getImageFromURLAndSaveItToLocalData:path fileURL:imgURL];
+      callback(@[[NSNull null], path]);
     }
   }
   else{
     // file exist
     NSLog(@"file exist");
-    callback(@[[NSNull null], [NSNull null]]);
+    callback(@[[NSNull null], path]);
   }
 }
 
-RCT_EXPORT_METHOD(getImage:(NSString *)id callback:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(imagePath:(NSString *)id callback:(RCTResponseSenderBlock)callback)
 {
-  NSString * documentsDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-  NSString *imgName = [id stringByAppendingString:@".png"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *path = [documentsDirectoryPath stringByAppendingPathComponent:imgName];
-  
-  
-  
-  if([fileManager fileExistsAtPath:path]){
-    NSData *data = [NSData dataWithContentsOfFile:path];
-    NSString *str = [data base64EncodedStringWithOptions:0];
+    NSString * documentsDirectoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *imgName = [id stringByAppendingString:@".png"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *path = [documentsDirectoryPath stringByAppendingPathComponent:imgName];
     
-    callback(@[[NSNull null], str]);
-  }
-  else{
-    // file exist
-    NSLog(@"file does not exist");
-  }
+    if([fileManager fileExistsAtPath:path]){
+        callback(@[[NSNull null], path]);
+    }
+    else {
+        callback(@[[NSNull null], [NSNull null]]);
+    }
 }
 
--(void) getImageFromURLAndSaveItToLocalData:(NSString *)imageName fileURL:(NSString *)fileURL inDirectory:(NSString *)directoryPath {
+-(void) getImageFromURLAndSaveItToLocalData:(NSString *)path fileURL:(NSString *)fileURL {
   NSData * data = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileURL]];
   
   NSError *error = nil;
-  [data writeToFile:[directoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@", imageName]] options:NSAtomicWrite error:&error];
+  [data writeToFile:path options:NSAtomicWrite error:&error];
   
   if (error) {
     NSLog(@"Error Writing File : %@",error);
   }else{
-    NSLog(@"Image %@ Saved SuccessFully",imageName);
+    NSLog(@"Image %@ Saved SuccessFully",path);
   }
 }
 
