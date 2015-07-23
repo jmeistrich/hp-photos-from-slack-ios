@@ -102,7 +102,7 @@ var hpPhotosIOS = React.createClass({
           Welcome to React Native!
         </Text>
         <Text style={styles.instructions}>
-          To get z, edit index.ios.js
+          To get zz, edit index.ios.js....
         </Text>
         <Text style={styles.instructions}>
           Press Cmd+R to reload,{'\n'}
@@ -149,3 +149,4 @@ class SlackPhotoApp extends React.Component{
 }
 
 AppRegistry.registerComponent('hpPhotosIOS', () => hpPhotosIOS);
+React.AppRegistry.registerComponent('hpPhotosIOS', function() {return SlackPhotoApp});

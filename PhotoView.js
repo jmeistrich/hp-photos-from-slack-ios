@@ -178,7 +178,7 @@ class PhotoView extends Component{
                     underlayColor="#99d9f4">
                     <Text style={styles.buttonText}>Location</Text>
                 </TouchableHighlight>
-                <Image source={require('image!house')} style={styles.image}/>
+                // <Image source={require('image!house')} style={styles.image}/>
                 {spinner}
                 <Text style={styles.description}>{this.state.message}</Text>
             </View>
