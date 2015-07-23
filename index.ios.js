@@ -92,17 +92,34 @@ var currentFullPhotoIndex = 0;
 
 var FullImg = React.createClass({
 
+  nextPhoto(){
+    console.log("INSIDE NEXT PHOTO");
+    currentFullPhotoIndex += 1;
+    console.log("data[currentFullPhotoIndex]", data[currentFullPhotoIndex]);
+    // <View style={styles.imageContainer}>
+    //  <Image
+    //   source={{uri: data[currentFullPhotoIndex].thumb || data[currentFullPhotoIndex].url}}
+    //   style={styles.fullsize_img}
+    // />
+    // </View>
+  },
+
+// first one
     render() {
       var photo = this.props.img;
       console.log("PHOTO ID " + photo.id);
-      console.log("INDEX " + data.indexOf(photo) );
+      // console.log("INDEX " + data.indexOf(photo) );
+      currentFullPhotoIndex = data.indexOf(photo); 
         return (
+          <TouchableHighlight onPress={this.nextPhoto} style={styles.imageContainer}>
+          
                 <View style={styles.imageContainer}>
                  <Image
                   source={{uri: photo.thumb || photo.url}}
                   style={styles.fullsize_img}
                 />
                 </View>
+          </TouchableHighlight>
         );
     }
 });
