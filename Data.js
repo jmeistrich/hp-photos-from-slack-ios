@@ -58,6 +58,10 @@ class Data {
                 .catch((error) => _this._appendMessage('AsyncStorage error: ' + error.message))
                 .done(() => _this._connect());
         }
+        else
+        {
+            this.connect();
+        }
     }
 
     getData() {
