@@ -67,11 +67,18 @@ var styles = StyleSheet.create({
     marginHorizontal: 1,
     marginVertical: 1,
   },
-    scene: {
-    padding: 10,
-    paddingTop: 74,
+  //   scene: {
+  //   padding: 10,
+  //   paddingTop: 74,
+  //   flex: 1
+  // },
+  fullsize_img:{
     flex: 1
-  }
+  },
+imageContainer: {
+    flex: 1,
+    alignItems: 'stretch'
+  },
 });
 
 var MOCKED_MOVIES_DATA = [
@@ -88,13 +95,14 @@ var FullImg = React.createClass({
       var photo = this.props.img;
       console.log("PHOTOTOTOTO ID " + photo.id);
         return (
-            <View style={[styles.scene, {backgroundColor: '#ECF6E8'}]}>
-                <Text>giant image here</Text>
+            // <View style={[styles.scene, {backgroundColor: '#ECF6E8'}]}>
+                <View style={styles.imageContainer}>
                  <Image
                   source={{uri: photo.thumb || photo.url}}
-                  style={styles.thumbnail}
+                  style={styles.fullsize_img}
                 />
-            </View>
+                </View>
+            // </View>
         );
     }
 });
