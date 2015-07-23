@@ -132,7 +132,7 @@ var FullImg = React.createClass({
     console.log("INSIDE NEXT PHOTO");
     currentFullPhotoIndex += 1;
 
-    if (currentFullPhotoIndex > data.getData().length){
+    if (currentFullPhotoIndex >= data.getData().length){
       currentFullPhotoIndex = 0;
     }
 
