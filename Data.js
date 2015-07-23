@@ -36,7 +36,6 @@ class Data {
     _update() {
         this.loaded = true;
         var arr = [];
-        var num = 0;
         var rows = ddpClient.collections.photos;
         for (var key in rows)
         {
@@ -51,13 +50,10 @@ class Data {
                         url: obj.photo_url,
                         title: s.title,
                         timestamp: s.timestamp,
-                        small: s.thumb_360,
-                        smallW: s.thumb_360_w,
-                        smallH: s.thumb_360_h
+                        thumb: s.thumb_360,
+                        thumbW: s.thumb_360_w,
+                        thumbH: s.thumb_360_h
                     });
-                    if (s.thumb_360) {
-                        num ++;
-                    }
                 }
             }
         }
