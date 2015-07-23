@@ -5,8 +5,10 @@
 'use strict';
 
 var React = require('react-native');
-var PhotoView = require('./PhotoView');
+// var PhotoView = require('./PhotoView');
 var Camera = require('./Camera');
+var Accordion = require('react-native-accordion');
+var PhotoFull = require('./PhotoFull');
 
 var {
   AppRegistry,
@@ -14,7 +16,9 @@ var {
   Text,
   View,
   Image,
-  ListView
+  ListView,
+  TouchableHighlight,
+  NavigatorIOS
 } = React;
 
 var LocalImages = require('NativeModules').LocalImages;
@@ -22,10 +26,11 @@ var LocalImages = require('NativeModules').LocalImages;
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-    // flexDirection: 'row'
+    // justifyContent: 'center',
+    // alignItems: 'center',
+    // backgroundColor: '#F5FCFF',
+    // // flexDirection: 'row'
+    // flexWrap: 'wrap',
   },
   text: {
     color: 'black',
@@ -44,15 +49,25 @@ var styles = StyleSheet.create({
     marginBottom: 5,
   },
   thumbnail: {
-    width: 100,
-    height: 100,
+    width: 123,
+    height: 123,
   },
-  listView: {
-    paddingTop: 20,
-    backgroundColor: "#f5fcff",
-    // flexWrap: 'wrap',
-    // flexDirection: 'row'
+  // listView: {
+  //   paddingTop: 20,
+  //   backgroundColor: "#f5fcff",
+  //   // flex-grow: 1,
+  //   // flexWrap: 'wrap',
+  //   // flexDirection: 'row'
 
+  // },
+  list: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  item: {
+    marginHorizontal: 1,
+    marginVertical: 1,
   }
 });
 
@@ -65,18 +80,42 @@ var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/maste
 // determine whether data oaded or not
 
 
+var PhotoFull2 = React.createClass({
+
+  render(){
+    console.log("inside photo full2");
+    return(
+
+      <Image
+         source={{uri: (photo.url ) }}
+         style={styles.thumbnail}
+       />
+
+      );
+  }
+
+});
 
 // constructs NavigationController
-var photoView = React.createClass({
+var HomeScene = React.createClass({
 
 
  getInitialState: function(){
+
    return{
     dataSource: new ListView.DataSource({
       rowHasChanged: (row1, row2) => row1 !== row2,
     }),
     loaded: false,
    };
+ },
+
+ photoPressed: function(myPhoto){
+  console.log("photo ID " + myPhoto.id);
+  this.props.navigator.push({
+    title: "Full size",
+    component: PhotoFull2
+  });
  },
 
  // // send data request
@@ -90,30 +129,29 @@ var photoView = React.createClass({
       dataSource: this.state.dataSource.cloneWithRows(data),
       loaded: true
     });
-     // console.log(data);
-     // var image = data[0];
-     // LocalImages.saveImage(image.thumb, image.id, function () {
-     //   console.log('saved');
-     //   LocalImages.getImage(image.id, function(error, data) {
-     //     console.log(error, data);
-     //   })
-     // });
    },
 
   render: function(){
     if(!this.state.loaded){
-     // if (!mockedPhotosData){
-      return this.renderLoadingView();
+      return (
+        this.renderLoadingView()
+        );
     }
 
     return (
+
        <ListView
+        contentContainerStyle={styles.list}
          dataSource={this.state.dataSource}
+         // renderRow={(rowData) => <Text style={styles.item}>{rowData}</Text>}
          renderRow={this.renderPhoto}
-         style={styles.listView}
+
+         // renderRow={this._renderRow}
+         // style={styles.listView}
        />
      );
   },
+
    renderLoadingView: function(){
      return(
        <View style={styles.container}>
@@ -127,58 +165,44 @@ var photoView = React.createClass({
  renderPhoto: function(photo){
   console.log(photo.thumb, photo.url);
    return(
+    <TouchableHighlight onPress={() => this.photoPressed(photo)}>
 
-     <View style={styles.container}>
+     <View style={styles.item}>
        <Image
-          // source={{uri: movie.thumb_80}}
-          source={{uri: (photo.thumb || photo.url)}}
+          source={{uri: (photo.thumb || photo.url ) }}
           style={styles.thumbnail}
         />
      </View>
+   </TouchableHighlight>
+
      );
  },
-
-
-
 });
 
-// class HelloWorld extends React.Component{
-//   render() {
-//     var movie = MOCKED_MOVIES_DATA[0];
-//     return
-//       <View style={styles.container}>
-//         <Text>{movie.title}</Text>
-//         <Text>{movie.year}</Text>
-//         <Image source={{uri: movie.posters.thumbnail}} />
-//       </View>
-
-//   }
-
-//   render(){
-//     return React.createElement(React.Text, {style: styles.text}, "Hello World!");
-//     // return <React.Text style={styles.text}>Hello World</React.Text>;
-//   }
-// }
 
 
 
-// constructs NavigationController
-// routes to HelloWorld component
-// class SlackPhotoApp extends React.Component{
-//   render(){
-//     return (
-//       <React.NavigatorIOS
-//         style={styles.container}
-//         initialRoute = {{
-//           title: 'PhotoView',
-//           component: PhotoView
-//         }}/>
-//       );
-//   }
-// }
+var navDemo = React.createClass({
+  // onRightButtonPress: function() {
+  //         this.refs.nav.push({
+  //             title: 'From Right',
+  //             component: PhotoFull
+  //         })
+  //     },
+
+  render(){
+    return(
+      <NavigatorIOS ref="nav" style={styles.container} initialRoute={{
+              component: HomeScene,
+              title: 'Hacker Paradise Photos',
+              // rightButtonTitle: 'MORE!',
+              // onRightButtonPress: this.onRightButtonPress
+          }} />
+
+      );
+  }
+});
 
 
-AppRegistry.registerComponent('hpPhotosIOS', () => photoView);
 
-// AppRegistry.registerComponent('hpPhotosIOS', function() {return SlackPhotoApp});
-
+AppRegistry.registerComponent('hpPhotosIOS', () => navDemo);
