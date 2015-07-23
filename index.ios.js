@@ -117,7 +117,7 @@ var HomeScene = React.createClass({
    return{
     dataSource: new ListView.DataSource({
       rowHasChanged: (row1, row2) => {
-        return true;//row1 !== row2 || row1.thumbCached !== row2.thumbCached;
+        return row1 !== row2;
       },
     }),
     loaded: false,
@@ -185,7 +185,7 @@ var HomeScene = React.createClass({
        <Image
           source={ photo.thumbCached ?
                     {uri: photo.thumbCached, isStatic: true} :
-                    {uri: photo.thumb || photo.url }}
+                    {uri: photo.thumb }}
           style={styles.thumbnail}
         />
      </View>

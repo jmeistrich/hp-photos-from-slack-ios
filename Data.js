@@ -14,6 +14,8 @@ var ddpClient = new DDPClient({url: 'ws://hp-photos-from-slack.meteor.com/websoc
 var batch = '2015-europe';
 var STORAGE_IDS = 'imageIDs';
 
+var SUPPORT_CACHING = false;
+
 class Data {
     init(cb) {
         this._cb = cb;
@@ -22,21 +24,24 @@ class Data {
         this.timeoutMeteor = undefined;
         this.timeoutCache = undefined;
 
-        AsyncStorage.getItem(STORAGE_IDS)
-            .then((value) => {
-                if (value)
-                {
-                    var localData = JSON.parse(value);
-                    for (var i = 0; i < localData.length; i ++)
+        if (SUPPORT_CACHING)
+        {
+            AsyncStorage.getItem(STORAGE_IDS)
+                .then((value) => {
+                    if (value)
                     {
-                        var obj = localData[i];
-                        this._dataById[obj.id] = obj;
+                        var localData = JSON.parse(value);
+                        for (var i = 0; i < localData.length; i ++)
+                        {
+                            var obj = localData[i];
+                            this._dataById[obj.id] = obj;
+                        }
+                        this._cb(localData);
                     }
-                    this._cb(localData);
-                }
-            })
-            .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
-            .done();
+                })
+                .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
+                .done();
+        }
 
         ddpClient.connect(() => ddpClient.subscribe('photos'));
 
@@ -57,6 +62,16 @@ class Data {
         }
     }
 
+    _isPhoto(filetype) {
+        switch(filetype) {
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                return true;
+        }
+        return false;
+    }
+
     _update() {
         console.log('update');
         this.loaded = true;
@@ -70,7 +85,7 @@ class Data {
             {
                 var row = rows[key];
                 var s = row.slack;
-                if (!this._dataById[row._id] && row.batch && row.batch === batch && s)
+                if (!this._dataById[row._id] && row.batch && row.batch === batch && s && this._isPhoto(s.filetype))
                 {
                     var obj = {
                         id: row._id,
@@ -81,6 +96,10 @@ class Data {
                         // thumbW: s.thumb_360_w,
                         // thumbH: s.thumb_360_h
                     };
+                    if (!obj.thumb)
+                    {
+                        obj.thumb = obj.url;
+                    }
                     this._data.push(obj);
 
                     this._dataById[row._id] = obj;
@@ -96,7 +115,11 @@ class Data {
             AsyncStorage.setItem(STORAGE_IDS, JSON.stringify(this._data));
 
             this._cb(this._data);
-            this._cache(this._data, this._cb);
+
+            if (SUPPORT_CACHING)
+            {
+                this._cache(this._data, this._cb);
+            }
         }
     }
 
@@ -107,7 +130,6 @@ class Data {
             if (!error) {
                 image.thumbCached = data;
                 AsyncStorage.setItem(STORAGE_IDS, JSON.stringify(arr));
-                cb(arr);
             }
         });
     }
