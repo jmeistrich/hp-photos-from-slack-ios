@@ -17,7 +17,8 @@ var {
   Image,
   ListView,
   TouchableHighlight,
-  NavigatorIOS
+  NavigatorIOS,
+  PanResponder
 } = React;
 
 
@@ -87,13 +88,16 @@ var MOCKED_MOVIES_DATA = [
 
 var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
-// determine whether data oaded or not
+// determine whether data loaded or not
 
+var currentFullPhotoIndex = 0;
 
 var FullImg = React.createClass({
+
     render() {
       var photo = this.props.img;
-      console.log("PHOTOTOTOTO ID " + photo.id);
+      console.log("PHOTO ID " + photo.id);
+      console.log("INDEX " + data.indexOf(photo) );
         return (
             // <View style={[styles.scene, {backgroundColor: '#ECF6E8'}]}>
                 <View style={styles.imageContainer}>
