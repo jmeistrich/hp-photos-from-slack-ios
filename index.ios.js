@@ -7,7 +7,6 @@
 var React = require('react-native');
 // var PhotoView = require('./PhotoView');
 var Camera = require('./Camera');
-var Accordion = require('react-native-accordion');
 var PhotoFull = require('./PhotoFull');
 
 var {
@@ -167,36 +166,21 @@ var HomeScene = React.createClass({
 
  renderPhoto: function(photo){
    return(
-<<<<<<< HEAD
     <TouchableHighlight onPress={() => this.photoPressed(photo)}>
 
      <View style={styles.item}>
        <Image
-          source={{uri: (photo.thumb || photo.url ) }}
-=======
-     <View style={styles.container}>
-       {photo.thumbCached ?
-       <Image
-          source={{uri: photo.thumbCached, isStatic: true}}
-          style={styles.thumbnail}
-        /> :
-        <Image
-          source={{uri: photo.thumb || photo.url}}
->>>>>>> Cache images locally
+          source={ photo.thumbCached ?
+                    {uri: photo.thumbCached, isStatic: true} :
+                    {uri: photo.thumb || photo.url }}
           style={styles.thumbnail}
         />
-         }
      </View>
    </TouchableHighlight>
 
      );
  },
 });
-
-<<<<<<< HEAD
-
-=======
->>>>>>> Cache images locally
 
 
 var navDemo = React.createClass({
