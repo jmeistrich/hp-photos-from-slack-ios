@@ -15,8 +15,12 @@ var {
   View,
 } = React;
 
+var onChanged = function(data) {
+  console.log(data);
+}
+
 var data = require('./Data');
-data.init();
+data.init(onChanged);
 
 
 var hpPhotosIOS = React.createClass({
