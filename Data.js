@@ -83,23 +83,27 @@ class Data {
     }
 
     _connect() {
-        ddpClient.connect(() => ddpClient.subscribe('photos'));
+        if (navigator.onLine)
+        {
+            ddpClient.connect(() => ddpClient.subscribe('photos'));
 
-        var observer = ddpClient.observe("photos");
-        observer.added = () => this._updateHandler();
+            var observer = ddpClient.observe("photos");
+            observer.added = () => this._updateHandler();
+        }
     }
 
     _updateHandler() {
-        if (!this.loaded) {
+        // if (!this.loaded) {
             if (this.timeoutMeteor)
             {
                 clearTimeout(this.timeoutMeteor);
+                this.timeoutMeteor = undefined;
             }
             this.timeoutMeteor = setTimeout(this._update.bind(this), 2000);
-        }
-        else {
-            this._update();
-        }
+        // }
+        // else {
+        //     this._update();
+        // }
     }
 
     _isPhoto(filetype) {
