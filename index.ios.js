@@ -8,6 +8,7 @@ var React = require('react-native');
 // var PhotoView = require('./PhotoView');
 var Camera = require('./Camera');
 var PhotoFull = require('./PhotoFull');
+var data = require('./Data');
 
 var {
   AppRegistry,
@@ -127,7 +128,6 @@ var HomeScene = React.createClass({
 
  // // send data request
    componentDidMount: function() {
-     var data = require('./Data');
      data.init(this.onDataChanged);
    },
    onDataChanged: function(data) {
