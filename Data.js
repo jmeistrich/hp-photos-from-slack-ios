@@ -14,7 +14,7 @@ var ddpClient = new DDPClient({url: 'ws://hp-photos-from-slack.meteor.com/websoc
 var batch = '2015-europe';
 var STORAGE_IDS = 'imageIDs';
 
-var SUPPORT_CACHING = false;
+var SUPPORT_CACHING = true;
 
 class Data {
     init(cb) {
@@ -26,6 +26,7 @@ class Data {
 
         if (SUPPORT_CACHING)
         {
+            var _this = this;
             AsyncStorage.getItem(STORAGE_IDS)
                 .then((value) => {
                     if (value)
@@ -34,15 +35,40 @@ class Data {
                         for (var i = 0; i < localData.length; i ++)
                         {
                             var obj = localData[i];
-                            this._dataById[obj.id] = obj;
+                            _this._dataById[obj.id] = obj;
                         }
-                        this._cb(localData);
+
+                        if (localData.length > 0)
+                        {
+                            _this._data = localData;
+                            LocalImages.imagePath(localData[0].id, (value) => {
+                                if (!value)
+                                {
+                                    console.log('CLEARING');
+                                    LocalImages.clear();
+                                    AsyncStorage.setItem(STORAGE_IDS, '');
+                                    _this._dataById = {};
+                                    _this._data = [];
+                                }
+                                _this._cb(_this._data);
+                            });
+                        }
                     }
                 })
-                .catch((error) => this._appendMessage('AsyncStorage error: ' + error.message))
-                .done();
+                .catch((error) => _this._appendMessage('AsyncStorage error: ' + error.message))
+                .done(() => _this._connect());
         }
+    }
 
+    getData() {
+        return this._data;
+    }
+
+    indexOf(value) {
+        return this._data.indexOf(value);
+    }
+
+    _connect() {
         ddpClient.connect(() => ddpClient.subscribe('photos'));
 
         var observer = ddpClient.observe("photos");
