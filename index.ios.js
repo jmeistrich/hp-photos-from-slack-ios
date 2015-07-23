@@ -74,23 +74,20 @@ var styles = StyleSheet.create({
   //   flex: 1
   // },
   fullsize_img:{
-    flex: 1
-  },
-imageContainer: {
     flex: 1,
-    alignItems: 'stretch'
+    resizeMode: "contain"
   },
+  imageContainer: {
+    position: 'absolute',
+    top: 0, bottom: 0, left: 0, right: 0,
+    backgroundColor: 'black'
+  }
 });
-
-var MOCKED_MOVIES_DATA = [
-  {title: 'Title', year: '2015', posters: {thumbnail: "http://i.imgur.com/UePbdph.jpg"}},
-];
-
-var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/master/docs/MoviesExample.json';
 
 // determine whether data loaded or not
 
 var currentFullPhotoIndex = 0;
+
 
 var FullImg = React.createClass({
 
@@ -99,14 +96,12 @@ var FullImg = React.createClass({
       console.log("PHOTO ID " + photo.id);
       console.log("INDEX " + data.indexOf(photo) );
         return (
-            // <View style={[styles.scene, {backgroundColor: '#ECF6E8'}]}>
                 <View style={styles.imageContainer}>
                  <Image
                   source={{uri: photo.thumb || photo.url}}
                   style={styles.fullsize_img}
                 />
                 </View>
-            // </View>
         );
     }
 });
