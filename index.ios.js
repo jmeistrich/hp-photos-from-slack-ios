@@ -5,6 +5,9 @@
 'use strict';
 
 var React = require('react-native');
+var PhotoView = require('./PhotoView');
+var Camera = require('./Camera');
+
 var {
   AppRegistry,
   StyleSheet,
@@ -46,8 +49,8 @@ var printEverything = function()
       }
     }
   }
-  console.log(arr);
-  console.log('num', num);
+  // console.log(arr);
+  // console.log('num', num);
 }
 
     var updateRows = function(rows) {
@@ -76,7 +79,7 @@ var printEverything = function()
           clearTimeout(timeout);
         }
         timeout = setTimeout(printEverything, 5000);
-        console.log('num photos', num);
+        // console.log('num photos', num);
       };
 
 // observe the lists collection
@@ -128,5 +131,21 @@ var styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+
+// constructs NavigationController
+// routes to HelloWorld component
+class SlackPhotoApp extends React.Component{
+  render(){
+    return (
+      <React.NavigatorIOS
+        style={styles.container}
+        initialRoute = {{
+          title: 'PhotoView',
+          component: SearchPage
+        }}/>
+      );
+  }
+}
 
 AppRegistry.registerComponent('hpPhotosIOS', () => hpPhotosIOS);
