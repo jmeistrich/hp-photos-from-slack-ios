@@ -82,6 +82,15 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0, bottom: 0, left: 0, right: 0,
     backgroundColor: 'black'
+  },
+  imageContainerLow: {
+    position: 'absolute',
+    top: 0, bottom: 0, left: 0, right: 0,
+  },
+  imageContainerHigh: {
+    position: 'absolute',
+    top: 0, bottom: 0, left: 0, right: 0,
+    backgroundColor: 'transparent'
   }
 });
 
@@ -112,13 +121,20 @@ var FullImg = React.createClass({
       currentFullPhotoIndex = data.indexOf(photo); 
         return (
           <TouchableHighlight onPress={this.nextPhoto} style={styles.imageContainer}>
-          
-                <View style={styles.imageContainer}>
+            <View style={styles.imageContainer}>
+              <View style={styles.imageContainerLow}>
                  <Image
                   source={{uri: photo.thumb || photo.url}}
                   style={styles.fullsize_img}
                 />
-                </View>
+              </View>
+              <View style={styles.imageContainerHigh}>
+                <Image
+                  source={{uri: photo.url}}
+                  style={styles.fullsize_img}
+                />
+              </View>
+            </View>
           </TouchableHighlight>
         );
     }
