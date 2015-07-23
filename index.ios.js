@@ -66,6 +66,11 @@ var styles = StyleSheet.create({
   item: {
     marginHorizontal: 1,
     marginVertical: 1,
+  },
+    scene: {
+    padding: 10,
+    paddingTop: 74,
+    flex: 1
   }
 });
 
@@ -78,21 +83,22 @@ var REQUEST_URL = 'https://raw.githubusercontent.com/facebook/react-native/maste
 // determine whether data oaded or not
 
 
-var PhotoFull2 = React.createClass({
-
-  render(){
-    console.log("inside photo full2");
-    return(
-
-      <Image
-         source={{uri: (photo.url ) }}
-         style={styles.thumbnail}
-       />
-
-      );
-  }
-
+var FullImg = React.createClass({
+    render() {
+      var photo = this.props.img;
+      console.log("PHOTOTOTOTO ID " + photo.id);
+        return (
+            <View style={[styles.scene, {backgroundColor: '#ECF6E8'}]}>
+                <Text>giant image here</Text>
+                 <Image
+                  source={{uri: photo.thumb || photo.url}}
+                  style={styles.thumbnail}
+                />
+            </View>
+        );
+    }
 });
+
 
 // constructs NavigationController
 var HomeScene = React.createClass({
@@ -110,13 +116,14 @@ var HomeScene = React.createClass({
    };
  },
 
- photoPressed: function(myPhoto){
-  console.log("photo ID " + myPhoto.id);
-  this.props.navigator.push({
-    title: "Full size",
-    component: PhotoFull2
-  });
- },
+  onPress(photo) {
+  console.log("hello id " + photo.id);
+        this.props.navigator.push({
+            title: 'Full Sized Image',
+            component: FullImg,
+            passProps: {img: photo},
+        });
+    },
 
  // // send data request
    componentDidMount: function() {
@@ -164,7 +171,7 @@ var HomeScene = React.createClass({
 
  renderPhoto: function(photo){
    return(
-    <TouchableHighlight onPress={() => this.photoPressed(photo)}>
+     <TouchableHighlight onPress={() => this.onPress(photo)}>
 
      <View style={styles.item}>
        <Image
