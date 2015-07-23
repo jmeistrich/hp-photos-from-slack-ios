@@ -100,43 +100,58 @@ var currentFullPhotoIndex = 0;
 
 
 var FullImg = React.createClass({
+  getInitialState: function() {
+    return {
+      img: this.props.img
+    }
+  },
+  displayPhoto: function(curPhoto){
+    return(
+      <TouchableHighlight onPress={this.nextPhoto} style={styles.imageContainer}>
+        <View style={styles.imageContainer}>
+          <View style={styles.imageContainerLow}>
+             <Image
+              source={{uri: curPhoto.thumb || curPhoto.url}}
+              style={styles.fullsize_img}
+            />
+          </View>
+          <View style={styles.imageContainerHigh}>
+            <Image
+              source={{uri: curPhoto.url}}
+              style={styles.fullsize_img}
+            />
+          </View>
+        </View>
+      </TouchableHighlight>
+    );
+  },
+
+
 
   nextPhoto(){
     console.log("INSIDE NEXT PHOTO");
     currentFullPhotoIndex += 1;
-    console.log("data[currentFullPhotoIndex]", data[currentFullPhotoIndex]);
-    // <View style={styles.imageContainer}>
-    //  <Image
-    //   source={{uri: data[currentFullPhotoIndex].thumb || data[currentFullPhotoIndex].url}}
-    //   style={styles.fullsize_img}
-    // />
-    // </View>
+
+    if (currentFullPhotoIndex > data.getData().length){
+      currentFullPhotoIndex = 0;
+    }
+
+    console.log("data[currentFullPhotoIndex]", data.getData()[currentFullPhotoIndex]);
+    var nextPhoto = data.getData()[currentFullPhotoIndex];
+
+    // "set state" triggers the render
+    this.setState({img: nextPhoto});
   },
 
 // first one
     render() {
-      var photo = this.props.img;
+      var photo = this.state.img;
       console.log("PHOTO ID " + photo.id);
       // console.log("INDEX " + data.indexOf(photo) );
       currentFullPhotoIndex = data.indexOf(photo); 
-        return (
-          <TouchableHighlight onPress={this.nextPhoto} style={styles.imageContainer}>
-            <View style={styles.imageContainer}>
-              <View style={styles.imageContainerLow}>
-                 <Image
-                  source={{uri: photo.thumb || photo.url}}
-                  style={styles.fullsize_img}
-                />
-              </View>
-              <View style={styles.imageContainerHigh}>
-                <Image
-                  source={{uri: photo.url}}
-                  style={styles.fullsize_img}
-                />
-              </View>
-            </View>
-          </TouchableHighlight>
-        );
+        // return (
+        return this.displayPhoto(photo);
+        // );
     }
 });
 
