@@ -14,7 +14,7 @@ var ddpClient = new DDPClient({url: 'ws://hp-photos-from-slack.meteor.com/websoc
 var batch = '2015-europe';
 var STORAGE_IDS = 'imageIDs';
 
-var SUPPORT_CACHING = true;
+var SUPPORT_CACHING = false;
 
 class Data {
     init(cb) {
@@ -60,7 +60,7 @@ class Data {
         }
         else
         {
-            this.connect();
+            this._connect();
         }
     }
 
