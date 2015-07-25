@@ -9,6 +9,12 @@ var React = require('react-native');
 var Camera = require('./Camera');
 var PhotoFull = require('./PhotoFull');
 var data = require('./Data');
+var Dimensions = require('Dimensions');
+// var Dimensions = require('./Dimensions');
+// var Device = require('react-native-device');
+// var pannable = require('./pannable');
+// var Pannable = require('./pannable');
+// import { pannable } from './pannable';
 
 var {
   AppRegistry,
@@ -78,6 +84,12 @@ var styles = StyleSheet.create({
     flex: 1,
     resizeMode: "contain"
   },
+  rightPhoto: {
+    position: 'absolute',
+    bottom: 0, right: 0,
+    backgroundColor: 'red',
+    width: 200,
+  },
   imageContainer: {
     position: 'absolute',
     top: 0, bottom: 0, left: 0, right: 0,
@@ -91,6 +103,11 @@ var styles = StyleSheet.create({
     position: 'absolute',
     top: 0, bottom: 0, left: 0, right: 0,
     backgroundColor: 'transparent'
+  },
+  rightPhoto:{
+    borderWidth: 1,
+    width: 100,
+    backgroundColor: "red"
   }
 });
 
@@ -98,35 +115,103 @@ var styles = StyleSheet.create({
 
 var currentFullPhotoIndex = 0;
 
+class FullImg extends React.Component{
 
-var FullImg = React.createClass({
-  getInitialState: function() {
-    return {
-      img: this.props.img
+  constructor(props){
+    super(props);
+    console.log("window width" + Dimensions.get('window').width);
+    this.state = {
+      img: this.props.img,
     }
-  },
-  displayPhoto: function(curPhoto){
+  }
+
+  // PanResponder stuffs
+  componentWillMount() {
+    var _this = this;
+    this.panResponder = PanResponder.create({
+
+      onStartShouldSetPanResponder: ({ nativeEvent: { touches } }, { x0, y0, moveX }) => {
+        console.log("onStartShouldSetPanResponder");
+        
+        const shouldSet = touches.length === 1;
+        if (shouldSet) {
+          const { onPanBegin } = this.props;
+          // console.log("x0", x0);
+          // console.log("y0", y0);
+          onPanBegin && onPanBegin({ 
+            originX: x0,
+            originY: y0
+          });
+        }
+
+        return shouldSet;
+      },
+
+      onPanResponderGrant: ({ nativeEvent: { touches } }, { x0, y0, moveX }) =>{
+
+        // if on right side of screen
+        if (x0 > (Dimensions.get('window').width / 2)){
+          _this.nextPhoto();
+        } else{
+        // on right side of screen
+          _this.prevPhoto();
+        }
+
+      },
+
+      // onMoveShouldSetPanResponder: ({ nativeEvent: { touches } }) => {
+      //   console.log("onMoveShouldSetPanResponder");
+      //   return touches.length === 1;
+      // },
+
+      onPanResponderTerminationRequest: () => true,
+      onPanResponderTerminate: this.handlePanResponderRelease,
+      onPanResponderRelease: this.handlePanResponderRelease
+    });
+  }
+
+  displayPhoto(curPhoto){
     return(
-      <TouchableHighlight onPress={this.nextPhoto} style={styles.imageContainer}>
-        <View style={styles.imageContainer}>
-          <View style={styles.imageContainerLow}>
-             <Image
-              source={{uri: curPhoto.thumb || curPhoto.url}}
-              style={styles.fullsize_img}
-            />
-          </View>
-          <View style={styles.imageContainerHigh}>
-            <Image
-              source={{uri: curPhoto.url}}
-              style={styles.fullsize_img}
-            />
-          </View>
-        </View>
-      </TouchableHighlight>
+        <View style={styles.imageContainerLow} {...this.panResponder.panHandlers}>
+         <Image 
+          source={{uri: curPhoto.thumb || curPhoto.url}}
+          style={styles.fullsize_img}
+        />
+      </View>
+
+      // <View {...this.panResponder.panHandlers}>
+      //   <View style={styles.imageContainerLow}>
+      //      <Image
+      //       source={{uri: curPhoto.thumb || curPhoto.url}}
+      //       style={styles.fullsize_img}
+      //     />
+      //   </View>
+
+      //   <View style={styles.imageContainerHigh}>
+      //     <Image
+      //       source={{uri: curPhoto.url}}
+      //       style={styles.fullsize_img}
+      //     />
+      //   </View>
+      // </View>
     );
-  },
+  }
 
+  // TO-DO LATER: REFACTOR PREV/NEXT INTO ONE FUNCTION
+  prevPhoto(){
+    console.log("INSIDE prev PHOTO");
+    currentFullPhotoIndex -= 1;
 
+    if (currentFullPhotoIndex <= 0){
+      currentFullPhotoIndex = data.getData().length-1;
+    }
+
+    // console.log("data[currentFullPhotoIndex]", data.getData()[currentFullPhotoIndex]);
+    var prevPhoto = data.getData()[currentFullPhotoIndex];
+
+    // "set state" triggers the render
+    this.setState({img: prevPhoto});
+  }
 
   nextPhoto(){
     console.log("INSIDE NEXT PHOTO");
@@ -141,19 +226,90 @@ var FullImg = React.createClass({
 
     // "set state" triggers the render
     this.setState({img: nextPhoto});
-  },
+  }
 
-// first one
-    render() {
-      var photo = this.state.img;
-      console.log("PHOTO ID " + photo.id);
-      // console.log("INDEX " + data.indexOf(photo) );
-      currentFullPhotoIndex = data.indexOf(photo);
-        // return (
-        return this.displayPhoto(photo);
-        // );
-    }
-});
+  render() {
+    var photo = this.state.img;
+    console.log("PHOTO ID " + photo.id);
+    // console.log("INDEX " + data.indexOf(photo) );
+    currentFullPhotoIndex = data.indexOf(photo);
+      // return (
+      return this.displayPhoto(photo);
+      // );
+  }
+
+}
+
+
+// var FullImg = React.createClass({
+//   getInitialState: function() {
+//     console.log("window width" + Dimensions.get('window').width);
+//     return {
+//       img: this.props.img,
+//       maxSize: 0
+//     }
+//   },
+
+//   // measureView: function(){
+//   //   this.refs
+//   // }
+
+//   displayPhoto: function(curPhoto){
+//     // console.log("self.frame.size.width" + Device.width);
+
+//     return(
+    
+//         // <View style={styles.imageContainer}>
+//         //   <TouchableHighlight onPress={this.nextPhoto} style={styles.rightPhoto}>
+//         //     <View style={styles.imageContainerLow} />
+//         //   </TouchableHighlight>
+//         // </View>
+
+//           <View style={styles.imageContainerLow} {...this._panResponder.pandHandlers}>
+//              <Image
+//               source={{uri: curPhoto.thumb || curPhoto.url}}
+//               style={styles.fullsize_img}
+//             />
+//           </View>
+
+//           // <View style={styles.imageContainerHigh}>
+//           //   <Image
+//           //     source={{uri: curPhoto.url}}
+//           //     style={styles.fullsize_img}
+//           //   />
+//           // </View>
+
+        
+      
+//     );
+//   },
+  
+//   nextPhoto(){
+//     console.log("INSIDE NEXT PHOTO");
+//     currentFullPhotoIndex += 1;
+
+//     if (currentFullPhotoIndex >= data.getData().length){
+//       currentFullPhotoIndex = 0;
+//     }
+
+//     console.log("data[currentFullPhotoIndex]", data.getData()[currentFullPhotoIndex]);
+//     var nextPhoto = data.getData()[currentFullPhotoIndex];
+
+//     // "set state" triggers the render
+//     this.setState({img: nextPhoto});
+//   },
+
+// // first one
+//     render() {
+//       var photo = this.state.img;
+//       console.log("PHOTO ID " + photo.id);
+//       // console.log("INDEX " + data.indexOf(photo) );
+//       currentFullPhotoIndex = data.indexOf(photo);
+//         // return (
+//         return this.displayPhoto(photo);
+//         // );
+//     }
+// });
 
 
 // constructs NavigationController

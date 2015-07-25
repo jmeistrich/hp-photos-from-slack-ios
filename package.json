@@ -9,6 +9,7 @@
     "ddp-client": "^0.1.1",
     "lodash": "^3.10.0",
     "react-native": "^0.7.1",
-    "react-native-accordion": "~0.2.1"
+    "react-native-accordion": "~0.2.1",
+    "react-native-device": "~0.2.0"
   }
 }
